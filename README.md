@@ -46,13 +46,15 @@ I base my opinions on the experience I've gained while:
 **Examples**
 
 ```elm
+{- NB: function "getConsumption" is defined elsewhere in the module -}
+
 updateCar : Action -> Car -> Car
 updateCar action car =
   case action of
     Refuel ->
       { car | fuelPercentage <- 100 }    -- simple update
     Drive distance ->
-      { car | fuelPercentage <- car.fuelPercentage - (getConsumption distance car)  -- func defined elsewhere
+      { car | fuelPercentage <- car.fuelPercentage - (getConsumption distance car)
             , odometer <- car.odometer + distance
             }
     _ ->  -- never have a possible case fall-through
