@@ -2,6 +2,9 @@
 
 Opinionated best practices for [Elm](http://elm-lang.org/) code style.
 
+**Work in progress!**
+
+
 There is an official [style guide](http://elm-lang.org/docs/style-guide) on the Elm website. They state:
 
 > **Goal:** a consistent style that is easy to read and produces clean diffs. This means trading aggressively compact code for regularity and ease of modification.
@@ -34,16 +37,17 @@ I base my opinions on the experience I've gained while:
   3. imports exposing everything
 - When feasible, explicitly define what to expose from current module
 
-## Functions
+## Declarations
 
-- Name the function descriptively
+- Name functions descriptively
 - Name parameters descriptively
 - Write type annotations
 - Prefer `|>`, starting with whatever feels most natural
 - Avoid long functions
-- Split long `let` block definitions into separate functions
+- Split long `let` blocks into separate functions
+- Always add a newline after the `=` equal sign
 
-**Examples**
+**Good**
 
 ```elm
 {- NB: function "getConsumption" is defined elsewhere in the module -}
@@ -67,3 +71,23 @@ maybeToList maybe =
     |> Maybe.map (List.repeat 1)
     |> Maybe.withDefault []
 ```
+
+**Bad**
+
+```elm
+mtl m = withDefault [] (map (repeat 1) m)
+```
+
+While very compact, there are multiple things that make this code worse than the above:
+
+- Using imports with `exposing (..)` pollutes the namespace and makes it impossible to know which module is responsible for the functions `map` and `repeat` for example.
+- Missing type annotation makes matters even worse.
+- Indescriptive names cause mental overhead.
+- No newline after equals sign will lead to 1) long lines and 2) worse version control diffs.
+- Parens syntax is harder to glance through than `|>`.
+
+
+## Working with `elm-html`
+
+*TODO*
+
