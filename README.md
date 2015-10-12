@@ -28,6 +28,124 @@ I base my opinions on the experience I've gained while:
 - Use `elm-make --warn` and get rid of the warnings
   - Protip: for a completely fresh compilation, do `rm -rf elm-stuff/build-artifacts`
 
+In any block that is longer than one line, drop the first line down and continue from that indentation. Do the same for the accompanying block, even if it is short. This may seem overkill at first, but it really helps keeping the code clean as the project progresses.
+
+**Good**
+
+```elm
+transformN : Int -> (a -> b) -> List a -> List b
+transformN count transform list =
+  let
+    transformed =
+      list
+        |> List.take count
+        |> List.map transform
+    rest =
+      list
+        |> List.drop count
+  in
+    transformed ++ rest
+
+ifElseExample : Int -> List a -> List a
+ifElseExample threshold list =
+  if List.length list > threshold
+    then
+      list
+        |> doThings
+        |> someMore
+    else
+      list
+```
+
+**Bad**
+
+```elm
+doThings this that =
+  let mishymushy = mix this that
+      mushymishy = mix that this
+  in  [ mishymushy, mushymishy ]
+
+ifElseExample threshold list =
+  if List.length list > threshold
+    then
+      list
+        |> doThings
+        |> someMore
+    else list
+```
+
+Here the bad style sacrifices code maintainability in the name of less lines of code. Note that the `let-in` guideline is different from the official Elm style guide. This is because in my opinion reordering the `let` block contents should not require moving the keyword from one line to another. If you were to change the order of `mishymushy` and `mushymishy` definitions, it would end up looking quite messy in version control diffs.
+
+In the `ifElseExample` the only difference in the good and bad examples is the `else` block. For visual continuation, an indented else block is preferred.
+
+
+## Controls
+
+### `if-else`
+
+Add a newline after the `if` clause and have `then` and `else` indented under it. As mentioned above, unless both the blocks are very short, it's good practice to drop the block contents down for both of them.
+
+Don't play with lines just to make the block a one-liner.
+
+**Good**
+
+```elm
+if needleInHaystack
+  then actAccordingly
+  else doNothing
+
+if needleInHaystack
+  then
+    haystack
+      |> transform
+      |> filterRelevant
+  else
+    haystack
+```
+
+**Bad**
+
+```elm
+if needleInHaystack then actAccordingly else doNothing
+
+if needleInHaystack
+  then haystack |> transform |> filterRelevant
+  else haystack
+```
+
+### `case-of`
+
+- Add a newline after the `case-of` expression and each case's `->`
+- **Always** have a general case at the end to prevent possible future fall-throughs
+
+**Good**
+
+```elm
+valueOf : Thing -> Value
+valueOf thing =
+  case thing of
+    Diamond diamond ->
+      wow diamond
+    PocketLint ->
+      oh
+    _ ->
+      iDontEvenKnow
+```
+
+**Bad**
+
+```elm
+value = case thing of
+  Diamond diamond  -> wow diamond
+  PocketLint       -> oh
+```
+
+The `case thing of` clause should be one line down for glanceability.
+
+"Rhythmic" indentations for the `->` arrows may look nice, but they quickly become a nightmare for maintainability. Simply adding a parameter to any of the cases can push the arrow on that line further than the others, requiring modifications on all lines.
+
+Only covering current cases in `case-of` structures is very dangerous and should be avoided at all costs. As of elm-compiler 0.15.1 at least, the compiler cannot find possibilities for case fall-through. This means **adding a new possible `Thing` could cause runtime exceptions** without the default `_` case!
+
 ## Module definitions
 
 - Import only needed modules
@@ -42,7 +160,7 @@ I base my opinions on the experience I've gained while:
 - Name functions descriptively
 - Name parameters descriptively
 - Write type annotations
-- Prefer `|>`, starting with whatever feels most natural
+- Prefer `|>` (each on new line), starting with whatever feels most natural
 - Avoid long functions
 - Split long `let` blocks into separate functions
 - Always add a newline after the `=` equal sign
@@ -75,6 +193,13 @@ maybeToList maybe =
 **Bad**
 
 ```elm
+updateCar : Action -> Car -> Car
+updateCar action car =
+  case action of
+    Refuel -> { car | fuelPercentage <- 100 }
+    Drive distance ->
+      { car | fuelPercentage <- car.fuelPercentage - (getConsumption distance car), odometer <- car.odometer + distance }
+
 mtl m = withDefault [] (map (repeat 1) m)
 ```
 
@@ -85,6 +210,11 @@ While very compact, there are multiple things that make this code worse than the
 - Indescriptive names cause mental overhead.
 - No newline after equals sign will lead to 1) long lines and 2) worse version control diffs.
 - Parens syntax is harder to glance through than `|>`.
+
+
+#### Trickier parts
+
+
 
 
 ## Types and records
