@@ -214,11 +214,6 @@ While very compact, there are multiple things that make this code worse than the
 - Parens syntax is harder to glance through than `|>`.
 
 
-#### Trickier parts
-
-
-
-
 ## Types and records
 
 - Don't be afraid of introducing type aliases for common things -- they help with type annotations and make refactoring far easier
