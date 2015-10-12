@@ -205,6 +205,8 @@ mtl m = withDefault [] (map (repeat 1) m)
 
 While very compact, there are multiple things that make this code worse than the above:
 
+- `updateCar` has a way too long line that could easily be split.
+- The `case-of` can fall through if a new `Action` gets added in the codebase.
 - Using imports with `exposing (..)` pollutes the namespace and makes it impossible to know which module is responsible for the functions `map` and `repeat` for example.
 - Missing type annotation makes matters even worse.
 - Indescriptive names cause mental overhead.
