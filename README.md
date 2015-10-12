@@ -87,6 +87,69 @@ While very compact, there are multiple things that make this code worse than the
 - Parens syntax is harder to glance through than `|>`.
 
 
+## Types and records
+
+- Don't be afraid of introducing type aliases for common things -- they help with type annotations and make refactoring far easier
+- Avoid nested record declarations, define type aliases instead
+- Use the Elm style
+  1. opening brace on the first line
+  2. leading commas on the same indentation
+  3. closing brace on the same indentation
+
+**Good**
+
+```elm
+type alias Car =
+  { fuelPercentage : Float
+  , odometer : Float
+  , manufacturer : CarManufacturer
+  , registrationDate : Date
+  }
+
+exampleCar =
+  { fuelPercentage = 100
+  , odometer = 0
+  , manufacturer = volkswagen
+  , registrationDate = Date.fromString "2015-10-12T07:33:23"
+  }
+```
+
+**Bad**
+
+```elm
+type alias Car = {
+  fuelPerc: Float,
+  odo: Float,
+  manuf: { name: String, prodVolume: Float }
+  registrationDate: String
+}
+
+exampleCar = {
+  fuelPerc = 100,
+  odo = 0,
+  manuf = { name = "Volkswagen", prodVolume: 3.13 },
+  registrationDate = Date.fromString "2015-10-12T07:33:23"
+}
+```
+
+While this syntax may feel more familiar coming from JavaScript, the above (Good) style formats the type alias declaration to be akin to function declarations.
+
+Inline nested records can't be referenced anywhere, but the above `CarManufacturer` could be used in type annotations anywhere. Also, should the manufacturer record properties change, the good example will still work while the bad example will need refactoring.
+
+The leading commas style with the braces aligned makes it glaringly obvious where the declaration starts and where it ends. It also avoids tiny syntax errors, like the one in the bad example. Did you notice it? No? How about the comma-revised version here:
+
+```elm
+type alias Car =
+  { fuelPerc: Float
+  , odo: Float
+  , manuf: { name: String, prodVolume: Float }
+  registrationDate: String
+  }
+```
+
+Another plus for the style is that adding a line to the bottom will not alter any other lines. The obvious drawback is that you can't say the same for the first line. In my experience, it is *far more common* to add a new property towards the end and not as the very first line so this drawback I can live with.
+
+
 ## Working with `elm-html`
 
 *TODO*
