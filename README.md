@@ -303,3 +303,19 @@ mapChildren things =
     ]
     <| List.map renderThing things
 ```
+
+Now, you might think the `consChildren` example is weird with the single-item lists and the `renderMaybe` thing in the middle. I admit, it is a bit strange at first. It would be nice to write it just like:
+
+```elm
+[ Header.render model.title
+, renderSubTitle model.subTitle
+, Footer.render model.footerThings
+]
+```
+
+But as said, the concat structure brings great flexibility. The `Header.render` and `Footer.render` functions return just plain `Html`, but the `renderMaybe` function returns a list. This is very convenient, because a list can always be empty and still work. Assuming `model.subTitle` is a Maybe type, `renderSubTitle` would have to always return some phony `Html` just to match the type, even when it shouldn't render at all.
+
+
+## License
+
+This style guide is © Ossi Hanhinen and licensed under the [MIT License](LICENSE).
