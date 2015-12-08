@@ -18,68 +18,48 @@ I base my opinions on the experience I've gained while:
 - with two other developers
 - over several months.
 
-## Common style tips
+### Common style tips
 
 - Line length <= 80
 - Indentation 2 spaces
 - No trailing spaces on lines
 - Newline at end of file
-- Write type annotations, records, case-ofs etc. with spaces between special characters. See examples for clarification.
+- Write type annotations, records, case-ofs etc. with spaces between special characters (`=`, `:`, `->`, etc).
 - Use `elm-make --warn` and get rid of the warnings
   - Protip: for a completely fresh compilation, do `rm -rf elm-stuff/build-artifacts`
 
 In any block that is longer than one line, drop the first line down and continue from that indentation. Do the same for the accompanying block, even if it is short. This may seem overkill at first, but it really helps keeping the code clean as the project progresses.
 
+
+### `let-in`
+
 **Good**
 
 ```elm
-transformN : Int -> (a -> b) -> List a -> List b
-transformN count transform list =
+doThings this that =
   let
-    transformed =
-      list
-        |> List.take count
-        |> List.map transform
-    rest =
-      list
-        |> List.drop count
+    mishymushy =
+      mix this that
+        |> andDoStuff
+    mushymishy =
+      mix that this
   in
-    transformed ++ rest
-
-ifElseExample : Int -> List a -> List a
-ifElseExample threshold list =
-  if List.length list > threshold
-    then
-      list
-        |> doThings
-        |> someMore
-    else
-      list
+    [ mishymushy
+    , mushymishy
+    ]
 ```
 
 **Bad**
 
 ```elm
 doThings this that =
-  let mishymushy = mix this that
+  let mishymushy = andDoStuff (mix this that)
       mushymishy = mix that this
   in  [ mishymushy, mushymishy ]
-
-ifElseExample threshold list =
-  if List.length list > threshold
-    then
-      list
-        |> doThings
-        |> someMore
-    else list
 ```
 
 Here the bad style sacrifices code maintainability in the name of less lines of code. Note that the `let-in` guideline is different from the official Elm style guide. This is because in my opinion reordering the `let` block contents should not require moving the keyword from one line to another. If you were to change the order of `mishymushy` and `mushymishy` definitions, it would end up looking quite messy in version control diffs.
 
-In the `ifElseExample` the only difference in the good and bad examples is the `else` block. For visual continuation, an indented else block is preferred.
-
-
-## Controls
 
 ### `if-else`
 
@@ -93,7 +73,17 @@ Don't play with lines just to make the block a one-liner.
 if needleInHaystack
   then actAccordingly
   else doNothing
+```
 
+**Bad**
+
+```elm
+if needleInHaystack then actAccordingly else doNothing
+```
+
+**Good**
+
+```elm
 if needleInHaystack
   then
     haystack
@@ -106,8 +96,6 @@ if needleInHaystack
 **Bad**
 
 ```elm
-if needleInHaystack then actAccordingly else doNothing
-
 if needleInHaystack
   then haystack |> transform |> filterRelevant
   else haystack
@@ -214,7 +202,7 @@ While very compact, there are multiple things that make this code worse than the
 - Parens syntax is harder to glance through than `|>`.
 
 
-## Types and records
+### Types and records
 
 - Don't be afraid of introducing type aliases for common things -- they help with type annotations and make refactoring far easier
 - Avoid nested record declarations, define type aliases instead
@@ -232,13 +220,6 @@ type alias Car =
   , manufacturer : CarManufacturer
   , registrationDate : Date
   }
-
-exampleCar =
-  { fuelPercentage = 100
-  , odometer = 0
-  , manufacturer = volkswagen
-  , registrationDate = Date.fromString "2015-10-12T07:33:23"
-  }
 ```
 
 **Bad**
@@ -250,7 +231,22 @@ type alias Car = {
   manuf: { name: String, prodVolume: Float }
   registrationDate: String
 }
+```
 
+**Good**
+
+```elm
+exampleCar =
+  { fuelPercentage = 100
+  , odometer = 0
+  , manufacturer = volkswagen
+  , registrationDate = Date.fromString "2015-10-12T07:33:23"
+  }
+```
+
+**Bad**
+
+```elm
 exampleCar = {
   fuelPerc = 100,
   odo = 0,
@@ -280,4 +276,3 @@ Another plus for the style is that adding a line to the bottom will not alter an
 ## Working with `elm-html`
 
 *TODO*
-
