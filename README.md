@@ -200,8 +200,6 @@ The `case thing of` clause should be one line down for glanceability.
 
 "Rhythmic" indentations for the `->` arrows may look nice, but they quickly become a nightmare for maintainability. Simply adding a parameter to any of the cases can push the arrow on that line further than the others, requiring modifications on all lines.
 
-~~Only covering current cases in `case-of` structures is very dangerous and should be avoided at all costs. As of elm-compiler 0.15.1 at least, the compiler cannot find possibilities for case fall-through. This means **adding a new possible `Thing` could cause runtime exceptions** without the default `_` case!~~
-
 As of 0.16 elm-compiler can check for non-exhaustive case matches!
 
 
@@ -239,7 +237,6 @@ maybeToList maybe =
 
 -- ❌ BAD
 import ?? exposing (..)
-
 mtl m = withDefault [] (map (repeat 1) m)
 ```
 
@@ -252,4 +249,57 @@ mtl m = withDefault [] (map (repeat 1) m)
 
 ## Working with `elm-html`
 
-*TODO*
+`elm-html` is the exception to the `import ?? exposing (..)` rule. It is very nice use the functions without the fully qualified names. Still, even with the Html modules, it's totally feasible to import only what you really need.
+
+We found it a good practice to start building the layout for a UI component with a simple skeleton such as the following:
+
+```elm
+module Sample (render) where
+
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
+
+import Model exposing (Model)
+
+render : Model -> Html
+render model =
+  div
+    [ class "sample"
+    ]
+    [ text "Sample Component"
+    ]
+```
+
+It is then easy to add helper functions that won't be exposed to other modules.
+
+
+### Dealing with the lists
+
+All elements in `elm-html` are functions with two lists as parameters. This means you'll be dealing with lists a lot. Building up components from several helper functions can quickly become unwieldy, unless you have decided upon standard ways of doing it.
+
+The two main methods we found best are 1) concatenating the child list, and 2) mapping a list.
+
+Concatenating a list with `++` gives great flexibility: based on certain conditions (like logged-in state), the children of a top-level component might be totally - or partly - different.
+
+When rendering a list of things, however, it makes a ton of sense to just map over the list to render it.
+
+```elm
+-- Different kinds of children: concat
+consChildren : Model -> Html
+consChildren model =
+  div
+    [ --attributes
+    ]
+    <| [ Header.render model.title ]
+    ++ renderMaybe model.subTitle
+    ++ [ Footer.render model.footerThings ]
+
+
+-- Same kinds of children: map
+mapChildren : List Thing -> Html
+mapChildren things =
+  div
+    [ --attributes
+    ]
+    <| List.map renderThing things
+```
