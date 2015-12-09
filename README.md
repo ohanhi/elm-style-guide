@@ -60,8 +60,8 @@ Avoid nested record declarations, define type aliases instead
 ```elm
 -- ✅ GOOD
 type alias CarManufacturer =
-  { name: String
-  , prodVolume: Float
+  { name : String
+  , prodVolume : Float
   }
 
 type alias CarMeta =
