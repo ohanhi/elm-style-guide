@@ -2,6 +2,8 @@
 
 Opinionated best practices for [Elm](http://elm-lang.org/) code style.
 
+**Note** A whole bunch of this guide is nowadays covered by [elm-format](https://github.com/avh4/elm-format). Definitely use that!
+
 **Work in progress!**
 
 
@@ -13,15 +15,15 @@ I wholly agree with the sentiment here. However, the examples in the document ar
 
 I base my opinions on the experience I've gained while:
 
-- working in a customer project
+- working in customer projects
 - almost solely in Elm
-- with two other developers
-- over several months.
+- with multiple other developers
+- over a couple of years.
 
 ### Common style tips
 
 - Line length <= 80
-- Indentation 2 spaces
+- Indentation 4 spaces
 - No trailing spaces on lines
 - Newline at end of file
 - Write type annotations
@@ -43,9 +45,9 @@ In any block that is longer than one line, drop the first line down and continue
 ```elm
 -- ✅ GOOD
 type alias Car =
-  { fuelPercentage : Float
-  , odometer : Float
-  }
+    { fuelPercentage : Float
+    , odometer : Float
+    }
 
 -- ❌ BAD
 type alias BadCar = {
@@ -60,20 +62,20 @@ Avoid nested record declarations, define type aliases instead
 ```elm
 -- ✅ GOOD
 type alias CarManufacturer =
-  { name : String
-  , prodVolume : Float
-  }
+    { name : String
+    , prodVolume : Float
+    }
 
 type alias CarMeta =
-  { manufacturer : CarManufacturer
-  -- other fields
-  }
+    { manufacturer : CarManufacturer
+    -- other fields
+    }
 
 -- ❌ BAD
 type alias BadCarMeta =
-  { manufacturer: { name: String, prodVolume: Float }
-  -- other fields
-  }
+    { manufacturer: { name: String, prodVolume: Float }
+    -- other fields
+    }
 ```
 
 Inline nested records can't be referenced, but the above `CarManufacturer` could be used in type annotations anywhere. Also, should the manufacturer record properties change, the good example will still work while the bad example will need refactoring.
@@ -84,9 +86,9 @@ Inline nested records can't be referenced, but the above `CarManufacturer` could
 ```elm
 -- ✅ GOOD
 goodCar =
-  { fuelPercentage = 100
-  , odometer = 0
-  }
+    { fuelPercentage = 100
+    , odometer = 0
+    }
 
 -- ❌ BAD
 badCar = {
@@ -100,21 +102,21 @@ badCar = {
 ```elm
 -- ✅ GOOD
 carBrands =
-  [ "Aston Martin"
-  , "Audi"
-  , "BMW"
-  , "Buick"
-  ]
+    [ "Aston Martin"
+    , "Audi"
+    , "BMW"
+    , "Buick"
+    ]
 
 -- ❌ BAD
 badCarBrands = ["Aston Martin", "Audi", "BMW", "Buick"]
 
 badCarBrands' = [
-  "Aston Martin",
-  "Audi",
-  "BMW",
-  "Buick"
-  ]
+    "Aston Martin",
+    "Audi",
+    "BMW",
+    "Buick"
+    ]
 ```
 
 The leading commas style with the braces aligned makes it glaringly obvious where the declaration starts and where it ends.
@@ -129,16 +131,17 @@ Another plus for the style is that adding a line to the bottom will not alter an
 ```elm
 -- ✅ GOOD
 doThings this that =
-  let
-    mishymushy =
-      mix this that
-        |> andDoStuff
-    mushymishy =
-      mix that this
-  in
-    [ mishymushy
-    , mushymishy
-    ]
+    let
+        mishymushy =
+            mix this that
+                |> andDoStuff
+
+        mushymishy =
+            mix that this
+    in
+        [ mishymushy
+        , mushymishy
+        ]
 
 -- ❌ BAD
 badDoThings this that =
@@ -152,30 +155,31 @@ Here the bad style sacrifices code maintainability in the name of less lines of 
 
 ### `if-else`
 
-Add a newline after the `if` clause and have `then` and `else` indented under it. As mentioned above, unless both the blocks are very short, it's good practice to drop the block contents down for both of them.
+Add a newline after the `if expression then` and `else` indented to the same level. Always drop the block contents down for both of the branches.
 
 ```elm
 -- ✅ GOOD
-if needleInHaystack
-  then actAccordingly
-  else doNothing
+if needleInHaystack then
+    actAccordingly
+else
+    doNothing
 
 -- ❌ BAD
 if needleInHaystack then actAccordingly else doNothing
 
+
 -- ✅ GOOD
-if needleInHaystack
-  then
+if needleInHaystack then
     haystack
-      |> transform
-      |> filterRelevant
-  else
+        |> transform
+        |> filterRelevant
+else
     haystack
 
 -- ❌ BAD
 if needleInHaystack
-  then haystack |> transform |> filterRelevant
-  else haystack
+    then haystack |> transform |> filterRelevant
+    else haystack
 ```
 
 ### `case-of`
@@ -185,10 +189,12 @@ if needleInHaystack
 ```elm
 -- ✅ GOOD
 case thing of
-  Diamond diamond ->
-    wow diamond
-  PocketLint ->
-    oh
+    Diamond diamond ->
+        wow diamond
+
+    PocketLint ->
+        oh
+
 
 -- ❌ BAD
 case thing of
@@ -231,9 +237,9 @@ import NotGood exposing (..)
 -- ✅ GOOD
 maybeToList : Maybe a -> List a
 maybeToList maybe =
-  maybe
-    |> Maybe.map (List.repeat 1)
-    |> Maybe.withDefault []
+    maybe
+        |> Maybe.map (List.repeat 1)
+        |> Maybe.withDefault []
 
 -- ❌ BAD
 import ?? exposing (..)
@@ -254,20 +260,20 @@ mtl m = withDefault [] (map (repeat 1) m)
 We found it a good practice to start building the layout for a UI component with a simple skeleton such as the following:
 
 ```elm
-module Sample (render) where
+module Sample (view) where
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 
 import Model exposing (Model)
 
-render : Model -> Html
-render model =
-  div
-    [ class "sample"
-    ]
-    [ text "Sample Component"
-    ]
+view : Model -> Html msg
+view model =
+    div
+        [ class "sample"
+        ]
+        [ text "Sample View"
+        ]
 ```
 
 It is then easy to add helper functions that won't be exposed to other modules.
@@ -287,33 +293,33 @@ When rendering a list of things, however, it makes a ton of sense to just map ov
 -- Different kinds of children: concat
 consChildren : Model -> Html
 consChildren model =
-  div
-    [ --attributes
-    ]
-    <| [ Header.render model.title ]
-    ++ renderMaybe model.subTitle
-    ++ [ Footer.render model.footerThings ]
+    div
+        [ --attributes
+        ]
+        <| [ Header.view model.title ]
+        ++ viewMaybe model.subTitle
+        ++ [ Footer.view model.footerThings ]
 
 
 -- Same kinds of children: map
 mapChildren : List Thing -> Html
 mapChildren things =
-  div
-    [ --attributes
-    ]
-    <| List.map renderThing things
+    div
+        [ --attributes
+        ]
+        <| List.map viewThing things
 ```
 
-Now, you might think the `consChildren` example is weird with the single-item lists and the `renderMaybe` thing in the middle. I admit, it is a bit strange at first. It would be nice to write it just like:
+Now, you might think the `consChildren` example is weird with the single-item lists and the `viewMaybe` thing in the middle. I admit, it is a bit strange at first. It would be nice to write it just like:
 
 ```elm
-[ Header.render model.title
-, renderSubTitle model.subTitle
-, Footer.render model.footerThings
+[ Header.view model.title
+, viewSubTitle model.subTitle
+, Footer.view model.footerThings
 ]
 ```
 
-But as said, the concat structure brings great flexibility. The `Header.render` and `Footer.render` functions return just plain `Html`, but the `renderMaybe` function returns a list. This is very convenient, because a list can always be empty and still work. Assuming `model.subTitle` is a Maybe type, `renderSubTitle` would have to always return some phony `Html` just to match the type, even when it shouldn't render at all.
+But as said, the concat structure brings great flexibility. The `Header.view` and `Footer.view` functions return just plain `Html`, but the `viewMaybe` function returns a list. This is very convenient, because a list can always be empty and still work. Assuming `model.subTitle` is a Maybe type, `viewSubTitle` would have to always return some phony `Html` just to match the type, even when it shouldn't render at all.
 
 
 ## License
